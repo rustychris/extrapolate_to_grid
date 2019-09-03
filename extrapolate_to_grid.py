@@ -47,6 +47,7 @@ class ExtrapolateToGrid(object):
                 t_sec=(t-self.t_ref)/np.timedelta64(1,'s')
                 t_sec=np.array([t_sec],'<i4')
                 data2d=self.field_2d(t)
+                assert np.all(np.isfinite(data2d)),"Error -- getting some non-finite values"
                 data3d=self.extrude_to_3d(data2d)
                 fp.write( t_sec.tobytes() )
                 fp.write(data3d.astype('<f4'))
@@ -134,14 +135,14 @@ class ExtrapolateToGrid(object):
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description='Extrapolate point data in space and time.')
 
-    parser.add_argument("-g", "--grid",help="Mask region by grid outline",default=None,required=True)
+    parser.add_argument("-g", "--grid",help="Path to DWAQ grid geometry netcdf.",default=None,required=True)
     
-    parser.add_argument("-p", "--projection",help="Mask region by grid outline",default="EPSG:26910")
+    parser.add_argument("-p", "--projection",help="Map projection for the grid.",default="EPSG:26910")
 
     # these will default to the period of the data.
-    parser.add_argument("-r", "--reference", help="Reference date for DWAQ run", default=None, required=True)
-    parser.add_argument("-s", "--start", help="Date of start of output",default=None)
-    parser.add_argument("-e", "--end", help="Date of end of output",default=None)
+    parser.add_argument("-r", "--reference", help="Reference date for DWAQ run (YYYY-MM-DDTHH:MM)", default=None, required=True)
+    parser.add_argument("-s", "--start", help="Date of start of output (YYYY-MM-DDTTHH:MM)",default=None)
+    parser.add_argument("-e", "--end", help="Date of end of output (YYYY-MM-DDTHH:MM)",default=None)
     
     parser.add_argument("-o", "--output", help="Path to DWAQ segment file for output", default="output.seg")
 
@@ -153,6 +154,9 @@ if __name__=="__main__":
 
     parser.add_argument("-m", "--plot", help="Try to display plots of each time step as they are processed",
                         action='store_true')
+
+    parser.add_argument("-a","--alpha", help="Degree of smoothing. Smaller is smoother and more stable.", default=1e-5,
+                        type=float)
     
     args=parser.parse_args()
 
@@ -237,4 +241,5 @@ if __name__=="__main__":
                       n_layers=args.layers,
                       t_ref=args.reference,
                       plot_mode=plot_mode,
+                      alpha=args.alpha,
                       output=args.output)
