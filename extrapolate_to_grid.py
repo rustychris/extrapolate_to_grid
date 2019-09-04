@@ -65,13 +65,19 @@ class ExtrapolateToGrid(object):
         if self.fig is None:
             self.fig=plt.figure()
             ax=self.fig.add_subplot(1,1,1)
-            
-            vmin=self.data['value'].min()
-            vmax=self.data['value'].max()
+
+            # min/max over entire period
+            #vmin=self.data['value'].min()
+            #vmax=self.data['value'].max()
+            # min/max for this moment
+            vmin=data2d.min()
+            vmax=data2d.max()
             cmap=scmap.load_gradient('turbo.cpt')
 
             self.coll=self.grid.plot_cells(values=data2d,clim=[vmin,vmax],
+                                           lw=0.5,
                                            cmap=cmap,ax=ax)
+            self.coll.set_edgecolor('face')
             ax.axis('equal')
             plt.colorbar(self.coll,ax=ax)
             self.txt=ax.text(0.05,0.05,"text",transform=ax.transAxes)
@@ -162,12 +168,16 @@ if __name__=="__main__":
 
     # LOAD THE GRID
     # for DWAQ flowgeom.nc, does this need to be tweaked?
-    if '_net.nc' in args.grid:
-        log.info("Reading grid from %s, assuming DFM format"%args.grid)
-        grid=unstructured_grid.UnstructuredGrid.read_dfm(args.grid)
-    else:
+    grid=None
+    if '_net.nc' not in args.grid:
         log.info("Reading grid from %s, assuming UGRID format"%args.grid)
-        grid=unstructured_grid.UnstructuredGrid.read_dfm(args.grid)
+        try:
+            grid=unstructured_grid.UnstructuredGrid.from_ugrid(args.grid)
+        except unstructured_grid.UnstructuredGrid.GridException:
+            log.warning("Failed to read as UGRID -- will try DFM")
+    if grid is None: 
+        log.info("Reading grid from %s, trying DFM format"%args.grid)
+        grid=unstructured_grid.UnstructuredGrid.read_dfm(args.grid,cleanup=True)
 
     # ASSEMBLE INPUT DATA
     dfs=[]
