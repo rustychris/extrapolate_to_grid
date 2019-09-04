@@ -19,12 +19,12 @@ Sample output:
 
 The key parameter when moving to a different grid or a source datasets with a 
 different characteristic spacing between samples is the smoothin parameter
-$\alpha$.  The default value, 1e-5, was used for the above plot.  Contrast
-that with alpha=1e-3:
+`alpha`.  The default value, `1e-5`, was used for the above plot.  Contrast
+that with `alpha=1e-3`:
 
 ![Alpha=1e-3 example](doc/extrap-alpha1e-3.png)
 
-and alpha=1e-6:
+and `alpha=1e-6`:
 
 ![Alpha=1e-6 example](doc/extrap-alpha1e-6.png)
 
