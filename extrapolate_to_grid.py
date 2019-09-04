@@ -84,9 +84,13 @@ class ExtrapolateToGrid(object):
         else:
             self.coll.set_array(data2d)
         self.txt.set_text( str(t) )
-        self.fig.canvas.draw()
-        plt.pause(0.01)
-                
+        if self.plot_mode=='each':
+            self.fig.canvas.draw()
+            plt.pause(0.01)
+        elif self.plot_mode=='save':
+            time_str=utils.to_datetime(t).strftime('%Y%m%dT%H%M')
+            self.fig.savefig('extrap-%s.png'%time_str)
+            
     def time_steps(self):
         """
         Return sequence of datetime64 according to start,end and dt.
@@ -159,6 +163,9 @@ if __name__=="__main__":
     parser.add_argument("-l", "--layers", help="Set number of layers for output", default=1)
 
     parser.add_argument("-m", "--plot", help="Try to display plots of each time step as they are processed",
+                        action='store_true')
+
+    parser.add_argument("-M", "--save-plot", help="Try to save plots of each time step as they are processed",
                         action='store_true')
 
     parser.add_argument("-a","--alpha", help="Degree of smoothing. Smaller is smoother and more stable.", default=1e-5,
@@ -243,6 +250,8 @@ if __name__=="__main__":
 
     if args.plot:
         plot_mode='each'
+    elif args.save_plot:
+        plot_mode='save'
     else:
         plot_mode=None
         
