@@ -52,7 +52,7 @@ if __name__=="__main__":
                                              utils.to_datetime(end).strftime('%Y%m%d') )
         log.info("Output file: %s"%args.output)
 
-    download_usgs(start=start,end=end,output=output)
+    download_usgs(start=start,end=end,output=args.output)
 
 
 # For direct testing     
