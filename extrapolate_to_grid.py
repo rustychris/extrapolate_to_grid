@@ -1,5 +1,8 @@
 import logging
 
+import matplotlib
+matplotlib.use('Agg') # allows for headless
+
 logging.basicConfig(level=logging.INFO)
 log=logging.getLogger('extrapolate_to_grid')
 
@@ -160,7 +163,7 @@ if __name__=="__main__":
 
     parser.add_argument("-i", "--interval",help="Time step in output, suffix 's' for seconds, 'D' for days", default='1D')
 
-    parser.add_argument("-l", "--layers", help="Set number of layers for output", default=1)
+    parser.add_argument("-l", "--layers", help="Set number of layers for output", default=1,type=int)
 
     parser.add_argument("-m", "--plot", help="Try to display plots of each time step as they are processed",
                         action='store_true')
